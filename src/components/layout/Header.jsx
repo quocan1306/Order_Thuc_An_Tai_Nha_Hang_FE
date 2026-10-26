@@ -1,53 +1,94 @@
-function Header() {
+import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { FiBell, FiShoppingCart, FiUser } from "react-icons/fi";
+import { FaStar } from "react-icons/fa";
+import { categories } from "../../data/mockData";
+
+const Header = ({ tableNo = "108", cartCount = 0, onCallStaff }) => {
+  const [activeTab, setActiveTab] = useState("single");
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const activeCat = searchParams.get("cat") || "all";
+
   return (
-    <header className="w-full bg-white border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="text-2xl font-bold text-red-500">
-          OrderFood
+    <header className="sticky top-0 z-50 mx-auto w-full max-w-md bg-white shadow-sm">
+      {/* Thanh trên cùng */}
+      <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
+        <div className="flex items-center">
+          <img
+            src="/logo.jpg"
+            alt="SmartDine Logo"
+            className="h-8 w-8 rounded-full object-cover"
+          />
         </div>
 
-        <nav className="flex items-center gap-6">
-          <a
-            href="#"
-            className="text-gray-700 hover:text-red-500 transition-colors"
-          >
-            Trang chủ
-          </a>
+        <button
+          type="button"
+          onClick={onCallStaff || (() => alert("Đã gửi yêu cầu gọi nhân viên."))}
+          className="flex items-center gap-1 rounded-full bg-red-600 px-3 py-1.5 text-xs font-semibold text-white"
+        >
+          <FiBell className="h-3.5 w-3.5" />
+          <span>Gọi NV</span>
+        </button>
 
-          <a
-            href="#"
-            className="text-gray-700 hover:text-red-500 transition-colors"
-          >
-            Thực đơn
-          </a>
+        <div className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-bold text-gray-800">
+          Bàn {tableNo}
+        </div>
 
-          <a
-            href="#"
-            className="text-gray-700 hover:text-red-500 transition-colors"
+        <div className="flex items-center gap-2.5 text-gray-700">
+          <button
+            type="button"
+            onClick={() => navigate("/cart")}
+            aria-label="Mở giỏ hàng"
+            className="relative p-1"
           >
-            Khuyến mãi
-          </a>
-
-          <a
-            href="#"
-            className="text-gray-700 hover:text-red-500 transition-colors"
-          >
-            Liên hệ
-          </a>
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100">
-            🛒 Giỏ hàng
+            <FiShoppingCart className="h-5 w-5" />
+            {cartCount > 0 && (
+              <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                {cartCount}
+              </span>
+            )}
           </button>
 
-          <button className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-            Đăng nhập
+          <button
+            type="button"
+            onClick={() => alert("Chức năng tài khoản đang được phát triển.")}
+            aria-label="Tài khoản"
+            className="p-1"
+          >
+            <FiUser className="h-5 w-5" />
+          </button>
+
+          <button
+            type="button"
+            onClick={() => alert("Chức năng yêu thích đang được phát triển.")}
+            aria-label="Yêu thích"
+            className="p-1 text-red-600"
+          >
+            <FaStar className="h-5 w-5" />
           </button>
         </div>
       </div>
-    </header>
-  )
-}
 
-export default Header
+      {/* Danh mục */}
+      <div className="flex items-center gap-2 overflow-x-auto bg-white px-3 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            type="button"
+            onClick={() => navigate(cat.id === "all" ? "/" : `/?cat=${cat.id}`)}
+            className={`shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-xs ${
+              activeCat === cat.id
+                ? "bg-red-600 font-bold text-white"
+                : "bg-gray-100 font-medium text-gray-700"
+            }`}
+          >
+            {cat.name}
+          </button>
+        ))}
+      </div>
+    </header>
+  );
+};
+
+export default Header;

@@ -1,92 +1,106 @@
+import { useMemo, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { FiSearch } from "react-icons/fi";
+import ProductCard from "../components/card/ProductCard";
+import { products } from "../data/mockData";
+import { useOrder } from "../context/OrderContext";
+import bannerImg from "../assets/ex/banner.jpg";
+
+// Bỏ dấu tiếng Việt để gõ "ba chi" vẫn tìm ra "Ba chỉ"
+const normalize = (str = "") =>
+  str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase();
+
 function Home() {
+  const navigate = useNavigate();
+  const { cart, addToCart } = useOrder();
+  const [keyword, setKeyword] = useState("");
+  const [searchParams] = useSearchParams();
+  const activeCat = searchParams.get("cat") || "all";
+
+  const totalQuantity = cart.reduce((sum, item) => sum + item.quantity, 0);
+
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  const filteredProducts = useMemo(() => {
+    const q = normalize(keyword.trim());
+    return products.filter((p) => {
+      const matchCat = activeCat === "all" || p.category === activeCat;
+      const matchKeyword = !q || normalize(p.name).includes(q);
+      return matchCat && matchKeyword;
+    });
+  }, [keyword, activeCat]);
+
   return (
-    <div>
-      
-      {/* Hero */}
-      <section className="bg-red-500 text-white">
-        <div className="max-w-7xl mx-auto px-6 py-20 text-center">
-          
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Đặt món ngon,
-            <br />
-            giao tận nơi
-          </h1>
+    <div className="pb-36">
+      {/* Banner + thanh search */}
+      <div className="relative mb-4 h-44 w-full overflow-hidden rounded-2xl">
+        <img
+          src={bannerImg}
+          alt="Banner"
+          className="h-full w-full object-cover object-right"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/50" />
 
-          <p className="text-lg md:text-xl text-red-100 max-w-2xl mx-auto mb-8">
-            Khám phá hàng trăm món ăn hấp dẫn và đặt hàng
-            nhanh chóng ngay hôm nay.
-          </p>
+        <div className="absolute bottom-3 left-3 right-3 flex h-12 items-center gap-2 rounded-2xl bg-white px-4 shadow-lg">
+          <FiSearch className="text-lg text-gray-400" />
+          <input
+            type="text"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="Tìm bò, ba chỉ, đồ uống..."
+            className="flex-1 bg-transparent text-[15px] outline-none placeholder:text-gray-400"
+          />
+        </div>
+      </div>
 
-          <button className="bg-white text-red-500 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-            Xem thực đơn
+      {/* Danh sách món */}
+      {filteredProducts.length > 0 ? (
+        <div className="grid grid-cols-2 gap-3">
+          {filteredProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={product}
+              onAddToCart={addToCart}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="py-10 text-center text-sm text-gray-500">
+          Không tìm thấy món phù hợp
+        </p>
+      )}
+
+      {totalQuantity > 0 && (
+        <div className="fixed bottom-[72px] left-1/2 z-40 w-full max-w-md -translate-x-1/2 px-3">
+          <button
+            type="button"
+            onClick={() => navigate("/cart")}
+            className="flex w-full items-center justify-between rounded-2xl bg-red-700 px-5 py-4 text-left text-white shadow-lg active:bg-red-800"
+          >
+            <div>
+              <p className="text-base font-semibold">{totalQuantity} món</p>
+              <p className="text-xs text-gray-300">Xem đơn hàng</p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="font-bold">
+                {totalPrice.toLocaleString("vi-VN")}đ
+              </span>
+              <span className="text-xl">→</span>
+            </div>
           </button>
-
         </div>
-      </section>
-
-      {/* Welcome */}
-      <section className="max-w-7xl mx-auto px-6 py-16">
-        
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-gray-900">
-            Vì sao chọn OrderFood?
-          </h2>
-
-          <p className="text-gray-500 mt-3">
-            Đặt đồ ăn đơn giản, nhanh chóng và tiện lợi.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <div className="text-4xl mb-4">
-              🍔
-            </div>
-
-            <h3 className="text-xl font-semibold mb-2">
-              Đa dạng món ăn
-            </h3>
-
-            <p className="text-gray-500">
-              Nhiều món ăn ngon phù hợp với mọi sở thích.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <div className="text-4xl mb-4">
-              🚀
-            </div>
-
-            <h3 className="text-xl font-semibold mb-2">
-              Giao hàng nhanh
-            </h3>
-
-            <p className="text-gray-500">
-              Đơn hàng được xử lý nhanh chóng và tiện lợi.
-            </p>
-          </div>
-
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <div className="text-4xl mb-4">
-              💳
-            </div>
-
-            <h3 className="text-xl font-semibold mb-2">
-              Thanh toán dễ dàng
-            </h3>
-
-            <p className="text-gray-500">
-              Hỗ trợ nhiều phương thức thanh toán tiện lợi.
-            </p>
-          </div>
-
-        </div>
-
-      </section>
-
+      )}
     </div>
-  )
+  );
 }
 
-export default Home
+export default Home;

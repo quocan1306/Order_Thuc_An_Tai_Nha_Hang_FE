@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Màn Hình Phục Vụ Tại Bàn | BBQ &amp; HOTPOT MASTER</title>
+<!-- Tailwind CSS CDN with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Font Awesome Icons -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<!-- Google Fonts: Inter & Montserrat -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Custom Config -->
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              red: '#C8102E',      /* Màu đỏ thương hiệu đồng bộ app khách */
+              darkred: '#990B22',
+              lightred: '#FEE2E2',
+              gold: '#F59E0B',     /* Vàng nghệ Chilled Meat tag */
+              lightgold: '#FEF3C7',
+              dark: '#111827',
+              graybg: '#F8FAFC'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif']
+          },
+          boxShadow: {
+            'card': '0 4px 18px 0 rgba(0, 0, 0, 0.05)',
+            'card-hover': '0 10px 25px -3px rgba(200, 16, 46, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    /* Custom scrollbar for refined restaurant POS feel */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
+    }
+    
+    /* Toast animation */
+    @keyframes slideInRight {
+      from { transform: translateX(110%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .toast-enter {
+      animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 font-sans min-h-screen flex flex-col antialiased">
+<!-- BEGIN: MainHeader -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs" data-purpose="main-header">
+<div class="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between h-18 py-2.5">
+<!-- Left: Brand Identity & Sub-system Badge -->
+<div class="flex items-center space-x-3.5">
+<!-- Bull Head BBQ Logo Emblem (Identical to Customer App) -->
+<div class="w-11 h-11 rounded-full bg-slate-900 border-2 border-brand-red flex items-center justify-center text-white shadow-sm flex-shrink-0 relative overflow-hidden group">
+<i class="fa-solid fa-fire text-brand-gold text-lg group-hover:scale-110 transition-transform"></i>
+<div class="absolute -bottom-1 text-[8px] font-black tracking-widest text-brand-red uppercase">BBQ</div>
+</div>
+<div>
+<div class="flex items-center space-x-2">
+<span class="font-extrabold text-lg tracking-tight text-slate-900">BBQ &amp; HOTPOT MASTER</span>
+<span class="bg-brand-red text-white text-[11px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider shadow-xs">Phục Vụ Tại Bàn</span>
+</div>
+<p class="text-xs text-slate-500 font-medium">Hệ thống điều phối món ăn &amp; Trạng thái bàn ăn thực tế</p>
+</div>
+</div>
+<!-- Center: Layout Mode Switchers (3 Options as requested) -->
+<nav class="hidden xl:flex items-center bg-slate-100 p-1.5 rounded-xl border border-slate-200/80" data-purpose="layout-switcher">
+<button class="flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-brand-red shadow-xs" id="viewBtn1" onclick="switchLayout('grid')">
+<i class="fa-solid fa-table-cells-large"></i>
+<span>P.Án 1: Dashboard Thẻ Bàn</span>
+</button>
+<button class="flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all" id="viewBtn2" onclick="switchLayout('split')">
+<i class="fa-solid fa-table-columns"></i>
+<span>P.Án 2: Split-View Bàn &amp; Món</span>
+</button>
+<button class="flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all" id="viewBtn3" onclick="switchLayout('priority')">
+<i class="fa-solid fa-list-check"></i>
+<span>P.Án 3: Ưu Tiên Món Chờ</span>
+</button>
+</nav>
+<!-- Right: Mobile Viewport Toggle, Online Status, Staff Info -->
+<div class="flex items-center space-x-3 sm:space-x-5">
+<!-- Mobile simulation toggle button -->
+<button class="px-2.5 py-1.5 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 text-xs font-semibold hidden md:flex items-center gap-1.5 transition" onclick="toggleMobileSim()" title="Xem mô phỏng Mobile Web">
+<i class="fa-solid fa-mobile-screen-button text-brand-red"></i>
+<span id="mobileSimText">Mô phỏng Mobile</span>
+</button>
+<!-- Online Heartbeat -->
+<div class="hidden sm:flex items-center space-x-1.5 px-2.5 py-1 bg-emerald-50 border border-emerald-200 rounded-full">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+<span class="text-xs font-bold text-emerald-700 tracking-wide">Trực tuyến</span>
+</div>
+<!-- Staff Profile Card -->
+<div class="flex items-center space-x-3 pl-2 sm:pl-3 border-l border-slate-200">
+<div class="text-right hidden sm:block">
+<div class="text-xs font-bold text-slate-900">Nguyễn Minh Anh</div>
+<div class="text-[11px] text-slate-500 font-medium">Ca tối • Khu vực A</div>
+</div>
+<div class="relative">
+<img alt="Avatar Nhân viên" class="w-9 h-9 rounded-full object-cover ring-2 ring-brand-red/30" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqchGOSGW516ERp0Ok8TWEThi2SS0irzLweLFWLRVsXL_qZvigEiU_bczYIKUUNV1ixiFGG5wMOAvAk40IZil71WNuCuO12WV5r8pW1eymn7rtELyuXrqNgWETF1vWl9C80LHR7iYud0ovzMrDJVUpPqkVoo6RWxSQ44fxMsXUZjDe4FM-5wXhAuzIyfTOIik_HCeJuDVjRm_06vnKlUUsNI7ue2ehVNHZko8re86TogQGMvxC1-i22w"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+</div>
+<button class="text-slate-400 hover:text-brand-red text-sm p-1.5 transition" title="Đăng xuất">
+<i class="fa-solid fa-arrow-right-from-bracket"></i>
+</button>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="flex-1 max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 transition-all duration-300" id="mainContainer">
+<!-- BEGIN: TitleAndKpis -->
+<section class="mb-6" data-purpose="kpi-dashboard-overview">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
+<div>
+<h1 class="text-2xl font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+            Quản lý phục vụ món ăn tại bàn
+            <span class="text-xs font-bold bg-brand-lightgold text-amber-800 border border-amber-200 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+<i class="fa-regular fa-clock"></i> Cập nhật: <span id="lastUpdated">Vừa xong</span>
+</span>
+</h1>
+<p class="text-sm text-slate-500 mt-1">
+            Theo dõi chi tiết tiến độ bếp ra món, đối soát món ăn và xác nhận trực tiếp khi bàn giao cho thực khách.
+          </p>
+</div>
+<div class="flex items-center gap-2">
+<button class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs transition shadow-xs active:scale-95" onclick="refreshData()">
+<i class="fa-solid fa-rotate text-brand-red" id="refreshIcon"></i>
+<span>Làm mới dữ liệu</span>
+</button>
+<div class="text-xs bg-slate-200/70 text-slate-700 px-3 py-2 rounded-xl font-semibold hidden lg:block">
+            Ca làm việc: <span class="font-bold text-slate-900">17:00 - 23:00</span>
+</div>
+</div>
+</div>
+<!-- 4 KPI Stat Cards -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4" data-purpose="kpi-metrics-grid">
+<!-- KPI 1: Active Tables -->
+<div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-card flex items-center justify-between">
+<div>
+<p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Bàn đang phục vụ</p>
+<h3 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-1" id="kpiActiveTables">08 <span class="text-xs font-medium text-slate-400">bàn</span></h3>
+</div>
+<div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 text-lg">
+<i class="fa-solid fa-utensils"></i>
+</div>
+</div>
+<!-- KPI 2: Pending Dishes (High Alert) -->
+<div class="bg-gradient-to-br from-amber-50 to-orange-50/60 rounded-2xl p-4 border border-amber-200 shadow-card flex items-center justify-between relative overflow-hidden">
+<div class="relative z-10">
+<p class="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+              Món đang chờ giao
+            </p>
+<h3 class="text-2xl sm:text-3xl font-extrabold text-amber-900 mt-1" id="kpiPendingDishes">08 <span class="text-xs font-bold text-amber-700">món</span></h3>
+</div>
+<div class="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg shadow-sm">
+<i class="fa-solid fa-bell-concierge"></i>
+</div>
+</div>
+<!-- KPI 3: Served Dishes -->
+<div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-card flex items-center justify-between">
+<div>
+<p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Món đã phục vụ</p>
+<h3 class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1" id="kpiServedDishes">14 <span class="text-xs font-medium text-slate-400">món</span></h3>
+</div>
+<div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200 flex items-center justify-center text-lg">
+<i class="fa-solid fa-circle-check"></i>
+</div>
+</div>
+<!-- KPI 4: Completed Tables -->
+<div class="bg-white rounded-2xl p-4 border border-slate-200/90 shadow-card flex items-center justify-between">
+<div>
+<p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Bàn đã nhận đủ món</p>
+<h3 class="text-2xl sm:text-3xl font-extrabold text-indigo-600 mt-1" id="kpiCompleteTables">03 <span class="text-xs font-medium text-slate-400">bàn</span></h3>
+</div>
+<div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-200 flex items-center justify-center text-lg">
+<i class="fa-solid fa-champagne-glasses"></i>
+</div>
+</div>
+</div>
+</section>
+<!-- END: TitleAndKpis -->
+<!-- BEGIN: SearchAndFilters -->
+<section class="bg-white p-4 rounded-2xl border border-slate-200 shadow-card mb-6" data-purpose="search-filter-toolbar">
+<div class="flex flex-col md:flex-row items-center justify-between gap-4">
+<!-- Live Search Box with Icon -->
+<div class="relative w-full md:w-96">
+<i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+<input class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-brand-red focus:border-brand-red transition placeholder-slate-400" id="searchInput" oninput="handleSearch()" placeholder="Tìm bàn (VD: Bàn 05, Bàn 02) hoặc tên món..." type="text"/>
+<button class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs" id="clearSearchBtn" onclick="clearSearch()">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+<!-- Filter Pill Chips (Styled exactly like customer category tabs in screenshot) -->
+<div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 scrollbar-none" data-purpose="status-filters">
+<button class="filter-btn px-4 py-2 rounded-full text-xs font-extrabold transition-all bg-brand-red text-white shadow-xs flex-shrink-0" id="filter-all" onclick="setFilter('all')">
+            TẤT CẢ (8 bàn)
+          </button>
+<button class="filter-btn px-4 py-2 rounded-full text-xs font-bold transition-all bg-slate-100 hover:bg-slate-200 text-slate-700 flex-shrink-0" id="filter-pending" onclick="setFilter('pending')">
+            CÓ MÓN CẦN PHỤC VỤ (5 bàn)
+          </button>
+<button class="filter-btn px-4 py-2 rounded-full text-xs font-bold transition-all bg-slate-100 hover:bg-slate-200 text-slate-700 flex-shrink-0" id="filter-completed" onclick="setFilter('completed')">
+            ĐÃ NHẬN ĐỦ MÓN (3 bàn)
+          </button>
+</div>
+</div>
+</section>
+<!-- END: SearchAndFilters -->
+<!-- ============================================================== -->
+<!-- VIEW CONTAINER 1: GRID VIEW (DEFAULT)                          -->
+<!-- ============================================================== -->
+<!-- BEGIN: GridViewLayout -->
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5" data-purpose="table-cards-grid" id="layoutGrid">
+<!-- Cards rendered dynamically via JS -->
+</div>
+<!-- END: GridViewLayout -->
+<!-- ============================================================== -->
+<!-- VIEW CONTAINER 2: SPLIT-VIEW (MASTER / DETAIL)                 -->
+<!-- ============================================================== -->
+<!-- BEGIN: SplitViewLayout -->
+<div class="hidden grid-cols-1 lg:grid-cols-12 gap-6" data-purpose="table-split-view" id="layoutSplit">
+<!-- Left List of Tables -->
+<div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200 shadow-card p-4 h-[750px] flex flex-col">
+<div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+<h3 class="font-bold text-slate-900 text-sm">Danh Sách Bàn Ăn</h3>
+<span class="text-xs text-slate-500 font-medium">Chọn bàn để xem chi tiết đĩa món</span>
+</div>
+<div class="overflow-y-auto space-y-2 flex-1 pr-1" id="splitTableList">
+<!-- Populated by JS -->
+</div>
+</div>
+<!-- Right Detailed Table Service Panel -->
+<div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 shadow-card p-6 h-[750px] flex flex-col" id="splitDetailPane">
+<!-- Rendered selected table detail -->
+</div>
+</div>
+<!-- END: SplitViewLayout -->
+<!-- ============================================================== -->
+<!-- VIEW CONTAINER 3: PRIORITY PENDING DISHES LIST                 -->
+<!-- ============================================================== -->
+<!-- BEGIN: PriorityDishListLayout -->
+<div class="hidden bg-white rounded-2xl border border-slate-200 shadow-card overflow-hidden" data-purpose="priority-dishes-table" id="layoutPriority">
+<div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2">
+<i class="fa-solid fa-fire-burner text-brand-red"></i>
+            Danh sách Món Đang Chờ Phục Vụ (Xếp theo thời gian gọi)
+          </h3>
+<p class="text-xs text-slate-500 mt-0.5">Ưu tiên chế biến và mang đến bàn nhanh nhất cho thực khách</p>
+</div>
+<div class="text-xs font-semibold text-amber-800 bg-amber-100/80 px-3 py-1.5 rounded-lg border border-amber-300 inline-flex items-center gap-1.5 self-start sm:self-auto">
+<i class="fa-solid fa-triangle-exclamation"></i>
+<span>Cần phục vụ gấp các món trên 10 phút</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="text-[11px] font-extrabold uppercase text-slate-500 tracking-wider bg-slate-100/70 border-b border-slate-200">
+<th class="py-3 px-5">Mã Bàn</th>
+<th class="py-3 px-5">Món Ăn</th>
+<th class="py-3 px-4">Số lượng</th>
+<th class="py-3 px-5">Ghi chú bếp</th>
+<th class="py-3 px-4">Thời gian gọi</th>
+<th class="py-3 px-5">Trạng thái</th>
+<th class="py-3 px-5 text-right">Thao tác phục vụ</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-200 text-sm" id="priorityTableBody">
+<!-- Populated via JS -->
+</tbody>
+</table>
+</div>
+</div>
+<!-- END: PriorityDishListLayout -->
+<!-- Fallback Empty State -->
+<div class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300 p-8 my-4" id="emptySearchState">
+<div class="w-16 h-16 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center text-2xl mb-3">
+<i class="fa-solid fa-magnifying-glass"></i>
+</div>
+<h3 class="font-bold text-slate-800 text-lg">Không tìm thấy bàn hoặc món phù hợp</h3>
+<p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">Vui lòng thử tìm với từ khóa khác như "Bàn 01", "Bàn 05", "Ba chỉ heo", hoặc "Lõi vai".</p>
+<button class="mt-4 px-4 py-2 bg-brand-red text-white text-xs font-bold rounded-xl shadow-xs" onclick="clearSearch()">Xem tất cả bàn</button>
+</div>
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: ConfirmDeliveryModal -->
+<div class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 hidden" data-purpose="confirmation-dialog" id="confirmModal">
+<div class="bg-white w-full max-w-md rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform transition-all scale-95 opacity-0 duration-200" id="modalBox">
+<div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+<div class="flex items-center space-x-2 text-brand-red">
+<i class="fa-solid fa-bell-concierge text-lg"></i>
+<h4 class="font-bold text-slate-900 text-base">Xác Nhận Đã Giao Món</h4>
+</div>
+<button class="text-slate-400 hover:text-slate-600 text-sm p-1" onclick="closeConfirmModal()">
+<i class="fa-solid fa-xmark"></i>
+</button>
+</div>
+<div class="p-6 text-center">
+<div class="w-16 h-16 bg-red-50 text-brand-red rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-red-100">
+<i class="fa-solid fa-check-double"></i>
+</div>
+<h3 class="font-extrabold text-slate-900 text-lg mb-1" id="modalDishTitle">Ba chỉ heo tươi Chilled Meat x2</h3>
+<p class="text-sm text-slate-500 mb-4" id="modalTableSubtitle">Bàn giao tận tay khách tại <strong class="text-brand-red font-bold">BÀN 05</strong></p>
+<div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-left mb-5 space-y-1 text-slate-600">
+<p>• <strong>Ghi chú bếp:</strong> <span class="text-amber-700 font-semibold" id="modalNote">Cắt dày</span></p>
+<p>• <strong>Thời gian chờ:</strong> <span id="modalWaitTime">12 phút</span></p>
+<p>• Khi xác nhận, món sẽ lập tức được chuyển sang trạng thái <strong>ĐÃ NHẬN MÓN</strong>.</p>
+</div>
+<div class="grid grid-cols-2 gap-3">
+<button class="w-full py-2.5 px-4 border border-slate-300 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition" onclick="closeConfirmModal()">
+            Hủy bỏ
+          </button>
+<button class="w-full py-2.5 px-4 bg-brand-red hover:bg-brand-darkred text-white rounded-xl text-xs font-extrabold shadow-md transition active:scale-95 flex items-center justify-center gap-1.5" id="modalConfirmBtn" onclick="executeConfirmDelivery()">
+<i class="fa-solid fa-check"></i>
+<span>Đã Giao Xong</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- END: ConfirmDeliveryModal -->
+<!-- BEGIN: ToastNotificationContainer -->
+<div class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none" data-purpose="toast-alerts" id="toastContainer">
+<!-- Toasts will be injected dynamically -->
+</div>
+<!-- END: ToastNotificationContainer -->
+<!-- BEGIN: JavaScriptApplicationLogic -->
+<script data-purpose="restaurant-service-logic">
+    // Master Restaurant Tables & Dishes State
+    let currentFilter = 'all'; // 'all' | 'pending' | 'completed'
+    let currentLayout = 'grid'; // 'grid' | 'split' | 'priority'
+    let selectedSplitTableId = 'ban-05'; // Default active in Split View
+    let pendingAction = null; // Stored modal payload
+
+    // High quality food thumbnail placeholders corresponding to menu items in screenshot
+    const IMG_PORK_ROLL = 'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=200&q=80';
+    const IMG_BEEF = 'https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=200&q=80';
+    const IMG_HOTPOT = 'https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?auto=format&fit=crop&w=200&q=80';
+    const IMG_DRINK = 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=200&q=80';
+    const IMG_CHICKEN = 'https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=200&q=80';
+    const IMG_RICE = 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=200&q=80';
+
+    // 8 Sample Tables Dataset as specified
+    let tablesData = [
+      {
+        id: 'ban-01',
+        code: 'BÀN 01',
+        guestCount: 4,
+        orderTime: '15 phút trước',
+        waitMinutes: 15,
+        items: [
+          { id: 'b1-1', name: 'Ba chỉ heo cuộn sốt', qty: 2, note: 'Sốt cay riêng', status: 'PENDING', isChilled: true, img: IMG_PORK_ROLL },
+          { id: 'b1-2', name: 'Lõi vai bò Mỹ Chilled', qty: 1, note: '', status: 'PENDING', isChilled: true, img: IMG_BEEF },
+          { id: 'b1-3', name: 'Nước suối Lavie 500ml', qty: 2, note: 'Ướp lạnh', status: 'PENDING', isChilled: false, img: IMG_DRINK }
+        ]
+      },
+      {
+        id: 'ban-02',
+        code: 'BÀN 02',
+        guestCount: 2,
+        orderTime: '22 phút trước',
+        waitMinutes: 22,
+        items: [
+          { id: 'b2-1', name: 'Cơm chiên hải sản', qty: 1, note: 'Không hành tây', status: 'PENDING', isChilled: false, img: IMG_RICE },
+          { id: 'b2-2', name: 'Gà chiên nước mắm', qty: 1, note: '', status: 'SERVED', isChilled: false, img: IMG_CHICKEN },
+          { id: 'b2-3', name: 'Trà đào cam sả', qty: 2, note: 'Ít đường', status: 'SERVED', isChilled: false, img: IMG_DRINK }
+        ]
+      },
+      {
+        id: 'ban-03',
+        code: 'BÀN 03',
+        guestCount: 6,
+        orderTime: '8 phút trước',
+        waitMinutes: 8,
+        items: [
+          { id: 'b3-1', name: 'Ba chỉ heo tươi Chilled', qty: 3, note: 'Cắt lát mỏng', status: 'PENDING', isChilled: true, img: IMG_PORK_ROLL },
+          { id: 'b3-2', name: 'Lõi nạc vai bò Úc', qty: 2, note: '', status: 'PENDING', isChilled: true, img: IMG_BEEF },
+          { id: 'b3-3', name: 'Rau nấm tổng hợp', qty: 2, note: '', status: 'SERVED', isChilled: false, img: IMG_HOTPOT },
+          { id: 'b3-4', name: 'Bia Tiger bạc', qty: 6, note: 'Kèm xô đá', status: 'SERVED', isChilled: false, img: IMG_DRINK }
+        ]
+      },
+      {
+        id: 'ban-04',
+        code: 'BÀN 04',
+        guestCount: 3,
+        orderTime: '28 phút trước',
+        waitMinutes: 28,
+        items: [
+          { id: 'b4-1', name: 'Mông bò sốt tiêu đen', qty: 2, note: '', status: 'SERVED', isChilled: true, img: IMG_BEEF },
+          { id: 'b4-2', name: 'Kim chi Hàn Quốc', qty: 1, note: 'Thêm đĩa', status: 'SERVED', isChilled: false, img: IMG_RICE },
+          { id: 'b4-3', name: 'Nước ngọt Coca lon', qty: 3, note: 'Kèm ly đá', status: 'SERVED', isChilled: false, img: IMG_DRINK }
+        ]
+      },
+      {
+        id: 'ban-05',
+        code: 'BÀN 05', // Bàn trọng tâm được chỉ định
+        guestCount: 4,
+        orderTime: '12 phút trước',
+        waitMinutes: 12,
+        isFeatured: true,
+        items: [
+          { id: 'b5-1', name: 'Ba chỉ heo tươi Chilled Meat', qty: 2, note: 'Cắt dày', status: 'PENDING', isChilled: true, img: IMG_PORK_ROLL },
+          { id: 'b5-2', name: 'Lẩu Thái hải sản', qty: 1, note: 'Ít cay', status: 'PENDING', isChilled: false, img: IMG_HOTPOT },
+          { id: 'b5-3', name: 'Mì xào bò rau cải', qty: 1, note: '', status: 'SERVED', isChilled: false, img: IMG_RICE },
+          { id: 'b5-4', name: 'Trà đào cam sả', qty: 1, note: 'Ít đá', status: 'SERVED', isChilled: false, img: IMG_DRINK }
+        ]
+      },
+      {
+        id: 'ban-06',
+        code: 'BÀN 06',
+        guestCount: 2,
+        orderTime: '5 phút trước',
+        waitMinutes: 5,
+        items: [
+          { id: 'b6-1', name: 'Bò Wagyu nướng sốt Nhật', qty: 1, note: 'Nướng tái vừa', status: 'PENDING', isChilled: true, img: IMG_BEEF },
+          { id: 'b6-2', name: 'Nước ép dưa hấu tươi', qty: 2, note: 'Không đường', status: 'SERVED', isChilled: false, img: IMG_DRINK }
+        ]
+      },
+      {
+        id: 'ban-07',
+        code: 'BÀN 07',
+        guestCount: 5,
+        orderTime: '35 phút trước',
+        waitMinutes: 35,
+        items: [
+          { id: 'b7-1', name: 'Sườn bò rút xương sốt BBQ', qty: 2, note: '', status: 'SERVED', isChilled: true, img: IMG_BEEF },
+          { id: 'b7-2', name: 'Lẩu Tomyum chua cay', qty: 1, note: '', status: 'SERVED', isChilled: false, img: IMG_HOTPOT },
+          { id: 'b7-3', name: 'Bánh bao chiên sữa', qty: 2, note: '', status: 'SERVED', isChilled: false, img: IMG_RICE }
+        ]
+      },
+      {
+        id: 'ban-08',
+        code: 'BÀN 08',
+        guestCount: 3,
+        orderTime: '40 phút trước',
+        waitMinutes: 40,
+        items: [
+          { id: 'b8-1', name: 'Khoai tây chiên bơ tỏi', qty: 1, note: 'Chiên giòn', status: 'SERVED', isChilled: false, img: IMG_RICE },
+          { id: 'b8-2', name: 'Mông bò Úc thái mỏng', qty: 2, note: '', status: 'SERVED', isChilled: true, img: IMG_BEEF },
+          { id: 'b8-3', name: 'Nước ngọt Coca-Cola', qty: 3, note: 'Lạnh không đá', status: 'SERVED', isChilled: false, img: IMG_DRINK }
+        ]
+      }
+    ];
+
+    // Helper functions
+    function getTableStats(table) {
+      const pendingCount = table.items.filter(item => item.status === 'PENDING').length;
+      const servedCount = table.items.filter(item => item.status === 'SERVED').length;
+      const totalCount = table.items.length;
+      const progressPercent = totalCount > 0 ? Math.round((servedCount / totalCount) * 100) : 100;
+      const isComplete = pendingCount === 0;
+      return { pendingCount, servedCount, totalCount, progressPercent, isComplete };
+    }
+
+    // Update global KPIs
+    function updateKPIs() {
+      let totalActiveTables = tablesData.length;
+      let totalPendingDishes = 0;
+      let totalServedDishes = 0;
+      let totalCompleteTables = 0;
+
+      tablesData.forEach(t => {
+        const stats = getTableStats(t);
+        totalPendingDishes += stats.pendingCount;
+        totalServedDishes += stats.servedCount;
+        if (stats.isComplete) totalCompleteTables++;
+      });
+
+      document.getElementById('kpiActiveTables').innerHTML = `${String(totalActiveTables).padStart(2, '0')} <span class="text-xs font-medium text-slate-400">bàn</span>`;
+      document.getElementById('kpiPendingDishes').innerHTML = `${String(totalPendingDishes).padStart(2, '0')} <span class="text-xs font-bold text-amber-700">món</span>`;
+      document.getElementById('kpiServedDishes').innerHTML = `${String(totalServedDishes).padStart(2, '0')} <span class="text-xs font-medium text-slate-400">món</span>`;
+      document.getElementById('kpiCompleteTables').innerHTML = `${String(totalCompleteTables).padStart(2, '0')} <span class="text-xs font-medium text-slate-400">bàn</span>`;
+
+      // Update Filter button count labels
+      const pendingTablesCount = tablesData.filter(t => getTableStats(t).pendingCount > 0).length;
+      const completedTablesCount = tablesData.filter(t => getTableStats(t).isComplete).length;
+      
+      const filterPendingBtn = document.getElementById('filter-pending');
+      const filterCompletedBtn = document.getElementById('filter-completed');
+      if (filterPendingBtn) filterPendingBtn.textContent = `CÓ MÓN CẦN PHỤC VỤ (${pendingTablesCount} bàn)`;
+      if (filterCompletedBtn) filterCompletedBtn.textContent = `ĐÃ NHẬN ĐỦ MÓN (${completedTablesCount} bàn)`;
+    }
+
+    // Layout Switcher
+    function switchLayout(mode) {
+      currentLayout = mode;
+      
+      const btn1 = document.getElementById('viewBtn1');
+      const btn2 = document.getElementById('viewBtn2');
+      const btn3 = document.getElementById('viewBtn3');
+      const grid = document.getElementById('layoutGrid');
+      const split = document.getElementById('layoutSplit');
+      const priority = document.getElementById('layoutPriority');
+
+      // Reset styling of buttons
+      [btn1, btn2, btn3].forEach(btn => {
+        btn.className = "flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all";
+      });
+
+      // Hide all layouts
+      grid.classList.add('hidden');
+      split.classList.add('hidden');
+      split.classList.remove('grid');
+      priority.classList.add('hidden');
+
+      if (mode === 'grid') {
+        grid.classList.remove('hidden');
+        btn1.className = "flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-brand-red shadow-xs";
+        renderGridView();
+      } else if (mode === 'split') {
+        split.classList.remove('hidden');
+        split.classList.add('grid');
+        btn2.className = "flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-brand-red shadow-xs";
+        renderSplitView();
+      } else if (mode === 'priority') {
+        priority.classList.remove('hidden');
+        btn3.className = "flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all bg-white text-brand-red shadow-xs";
+        renderPriorityView();
+      }
+    }
+
+    // Set Filter Status
+    function setFilter(type) {
+      currentFilter = type;
+      
+      const btnAll = document.getElementById('filter-all');
+      const btnPending = document.getElementById('filter-pending');
+      const btnCompleted = document.getElementById('filter-completed');
+
+      // Reset all buttons style
+      [btnAll, btnPending, btnCompleted].forEach(b => {
+        b.className = "filter-btn px-4 py-2 rounded-full text-xs font-bold transition-all bg-slate-100 hover:bg-slate-200 text-slate-700 flex-shrink-0";
+      });
+
+      if (type === 'all') {
+        btnAll.className = "filter-btn px-4 py-2 rounded-full text-xs font-extrabold transition-all bg-brand-red text-white shadow-xs flex-shrink-0";
+      } else if (type === 'pending') {
+        btnPending.className = "filter-btn px-4 py-2 rounded-full text-xs font-extrabold transition-all bg-brand-red text-white shadow-xs flex-shrink-0";
+      } else if (type === 'completed') {
+        btnCompleted.className = "filter-btn px-4 py-2 rounded-full text-xs font-extrabold transition-all bg-brand-red text-white shadow-xs flex-shrink-0";
+      }
+
+      applyFiltersAndSearch();
+    }
+
+    // Search and filter combined logic
+    function getFilteredTables() {
+      const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+
+      return tablesData.filter(table => {
+        const stats = getTableStats(table);
+
+        // Filter tab condition
+        let matchFilter = true;
+        if (currentFilter === 'pending') matchFilter = stats.pendingCount > 0;
+        if (currentFilter === 'completed') matchFilter = stats.isComplete;
+
+        // Search condition
+        let matchSearch = true;
+        if (keyword) {
+          const matchTableCode = table.code.toLowerCase().includes(keyword);
+          const matchDish = table.items.some(item => item.name.toLowerCase().includes(keyword) || (item.note && item.note.toLowerCase().includes(keyword)));
+          matchSearch = matchTableCode || matchDish;
+        }
+
+        return matchFilter && matchSearch;
+      });
+    }
+
+    function handleSearch() {
+      const val = document.getElementById('searchInput').value;
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (val) {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+      applyFiltersAndSearch();
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('clearSearchBtn').classList.add('hidden');
+      applyFiltersAndSearch();
+    }
+
+    function applyFiltersAndSearch() {
+      if (currentLayout === 'grid') {
+        renderGridView();
+      } else if (currentLayout === 'split') {
+        renderSplitView();
+      } else if (currentLayout === 'priority') {
+        renderPriorityView();
+      }
+    }
+
+    // ==============================================================
+    // RENDER: GRID VIEW (Phương án 1 - Bố cục thẻ chuẩn)
+    // ==============================================================
+    function renderGridView() {
+      const container = document.getElementById('layoutGrid');
+      const emptyState = document.getElementById('emptySearchState');
+      const filtered = getFilteredTables();
+
+      if (filtered.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      container.innerHTML = filtered.map(table => {
+        const { pendingCount, servedCount, totalCount, progressPercent, isComplete } = getTableStats(table);
+        const isHighlight = table.id === 'ban-05';
+
+        return `
+          <!-- BEGIN: TableCard (${table.code}) -->
+          <div class="bg-white rounded-2xl border ${isHighlight ? 'border-brand-red ring-2 ring-brand-red/20' : 'border-slate-200/90'} shadow-card hover:shadow-card-hover transition-all duration-200 flex flex-col overflow-hidden" data-purpose="single-table-card">
+            
+            <!-- Table Header -->
+            <div class="p-4 ${isHighlight ? 'bg-red-50/60' : 'bg-slate-50/70'} border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center space-x-2.5">
+                <span class="w-10 h-10 rounded-xl ${isComplete ? 'bg-emerald-500 text-white' : 'bg-slate-900 text-white'} flex items-center justify-center font-extrabold text-sm tracking-tight shadow-xs">
+                  ${table.code.replace('BÀN ', '')}
+                </span>
+                <div>
+                  <div class="flex items-center gap-1.5">
+                    <h3 class="font-extrabold text-slate-900 text-base tracking-tight">${table.code}</h3>
+                    ${isHighlight ? '<span class="text-[10px] font-black uppercase bg-brand-red text-white px-1.5 py-0.5 rounded">Trọng tâm</span>' : ''}
+                  </div>
+                  <div class="flex items-center gap-2 text-xs text-slate-500">
+                    <span><i class="fa-solid fa-users text-[10px] text-slate-400"></i> ${table.guestCount} khách</span>
+                    <span>•</span>
+                    <span><i class="fa-regular fa-clock text-[10px] text-slate-400"></i> ${table.orderTime}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status Pill Badge -->
+              ${isComplete ? `
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-emerald-600"></i> Đã đủ món
+                </span>
+              ` : `
+                <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 flex items-center gap-1">
+                  <i class="fa-regular fa-hourglass-half text-amber-600 animate-spin" style="animation-duration: 3s"></i> Chờ ${pendingCount} món
+                </span>
+              `}
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="px-4 pt-3 pb-1">
+              <div class="flex justify-between items-center text-xs mb-1.5">
+                <span class="text-slate-500 font-medium">Tiến độ phục vụ:</span>
+                <span class="font-extrabold ${isComplete ? 'text-emerald-600' : 'text-slate-700'}">${servedCount}/${totalCount} món (${progressPercent}%)</span>
+              </div>
+              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div class="h-full rounded-full transition-all duration-500 ${isComplete ? 'bg-emerald-500' : 'bg-brand-red'}" style="width: ${progressPercent}%"></div>
+              </div>
+            </div>
+
+            <!-- List of Dishes in this Table -->
+            <div class="p-3.5 divide-y divide-slate-100 flex-1 overflow-y-auto max-h-72" data-purpose="table-dish-items">
+              ${table.items.map(item => `
+                <div class="py-2.5 first:pt-1 last:pb-1 flex items-center justify-between gap-2.5 group">
+                  <!-- Dish Info & Thumbnail -->
+                  <div class="flex items-center space-x-2.5 min-w-0">
+                    <div class="relative w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 bg-slate-100 border border-slate-200">
+                      <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                      ${item.isChilled ? '<span class="absolute top-0 right-0 bg-brand-gold text-[8px] font-black text-slate-900 px-1 py-0 rounded-bl">CHILLED</span>' : ''}
+                    </div>
+                    <div class="min-w-0">
+                      <div class="flex items-baseline space-x-1.5">
+                        <span class="font-black text-xs text-brand-red">x${item.qty}</span>
+                        <h4 class="font-bold text-xs text-slate-900 truncate" title="${item.name}">${item.name}</h4>
+                      </div>
+                      ${item.note ? `
+                        <div class="inline-flex items-center gap-1 bg-amber-50 border border-amber-200 text-amber-800 text-[10px] font-semibold px-1.5 py-0.2 rounded mt-0.5">
+                          <i class="fa-solid fa-pen-to-square text-[9px]"></i>
+                          <span>${item.note}</span>
+                        </div>
+                      ` : ''}
+                    </div>
+                  </div>
+
+                  <!-- Status / Confirm Button -->
+                  <div class="flex-shrink-0 text-right">
+                    ${item.status === 'SERVED' ? `
+                      <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1.5 rounded-lg select-none">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                        <span>ĐÃ NHẬN MÓN</span>
+                      </span>
+                    ` : `
+                      <button 
+                        onclick="requestConfirmDelivery('${table.id}', '${item.id}')"
+                        class="inline-flex items-center gap-1.5 text-xs font-extrabold text-white bg-brand-red hover:bg-brand-darkred active:scale-95 transition-all px-2.5 py-1.5 rounded-lg shadow-xs hover:shadow">
+                        <i class="fa-solid fa-check"></i>
+                        <span>Xác nhận đã giao</span>
+                      </button>
+                    `}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+
+            <!-- Table Footer Quick Notes -->
+            <div class="px-4 py-2.5 bg-slate-50 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+              <span>Mã order: #ORD-${table.id.toUpperCase()}</span>
+              ${isComplete ? `
+                <span class="text-emerald-700 font-bold flex items-center gap-1">
+                  <i class="fa-solid fa-thumbs-up"></i> Hoàn thành
+                </span>
+              ` : `
+                <span class="text-brand-red font-bold flex items-center gap-1">
+                  <i class="fa-solid fa-circle-dot animate-pulse"></i> Cần phục vụ
+                </span>
+              `}
+            </div>
+
+          </div>
+          <!-- END: TableCard -->
+        `;
+      }).join('');
+    }
+
+    // ==============================================================
+    // RENDER: SPLIT-VIEW (Phương án 2 - Master / Detail)
+    // ==============================================================
+    function renderSplitView() {
+      const leftList = document.getElementById('splitTableList');
+      const rightPane = document.getElementById('splitDetailPane');
+      const filtered = getFilteredTables();
+
+      if (filtered.length === 0) {
+        leftList.innerHTML = '<p class="text-sm text-slate-400 p-4 text-center">Không có bàn phù hợp</p>';
+        rightPane.innerHTML = '<p class="text-sm text-slate-400 p-4 text-center">Chọn một bàn bên trái</p>';
+        return;
+      }
+
+      // Ensure selected table exists in list, else default to first
+      if (!filtered.some(t => t.id === selectedSplitTableId)) {
+        selectedSplitTableId = filtered[0].id;
+      }
+
+      // Render Left List
+      leftList.innerHTML = filtered.map(table => {
+        const stats = getTableStats(table);
+        const isSelected = table.id === selectedSplitTableId;
+
+        return `
+          <div 
+            onclick="selectSplitTable('${table.id}')"
+            class="p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${isSelected ? 'bg-red-50/80 border-brand-red shadow-xs' : 'bg-slate-50 hover:bg-slate-100/80 border-slate-200'}">
+            
+            <div class="flex items-center space-x-3">
+              <span class="w-9 h-9 rounded-lg ${stats.isComplete ? 'bg-emerald-600' : 'bg-slate-800'} text-white font-extrabold text-xs flex items-center justify-center">
+                ${table.code.replace('BÀN ', '')}
+              </span>
+              <div>
+                <h4 class="font-extrabold text-sm text-slate-900">${table.code}</h4>
+                <p class="text-xs text-slate-500">${table.guestCount} khách • ${table.orderTime}</p>
+              </div>
+            </div>
+
+            <div class="text-right">
+              ${stats.isComplete ? `
+                <span class="text-[11px] font-bold text-emerald-700 bg-emerald-100/70 border border-emerald-200 px-2 py-0.5 rounded-md">Đủ món</span>
+              ` : `
+                <span class="text-[11px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-md">Chờ ${stats.pendingCount} món</span>
+              `}
+              <div class="text-[10px] text-slate-400 mt-1 font-semibold">${stats.servedCount}/${stats.totalCount} món</div>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+
+      // Render Right Detail
+      const selectedTable = tablesData.find(t => t.id === selectedSplitTableId) || filtered[0];
+      const selectedStats = getTableStats(selectedTable);
+
+      rightPane.innerHTML = `
+        <div class="flex items-center justify-between pb-4 border-b border-slate-200">
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-xl font-black text-slate-900">${selectedTable.code} - CHI TIẾT GIAO MÓN</h2>
+              ${selectedStats.isComplete ? `
+                <span class="bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold px-2.5 py-0.5 rounded-full">ĐÃ GIAO ĐỦ MÓN</span>
+              ` : `
+                <span class="bg-amber-100 text-amber-800 border border-amber-300 text-xs font-bold px-2.5 py-0.5 rounded-full">ĐANG CHỜ PHỤC VỤ</span>
+              `}
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">Số khách: ${selectedTable.guestCount} người • Thời gian gọi món: ${selectedTable.orderTime}</p>
+          </div>
+
+          <div class="text-right">
+            <span class="text-xs font-medium text-slate-500">Tiến độ đĩa món</span>
+            <div class="text-lg font-black text-slate-900">${selectedStats.servedCount} / ${selectedStats.totalCount} món</div>
+          </div>
+        </div>
+
+        <!-- Detail List Items -->
+        <div class="overflow-y-auto flex-1 divide-y divide-slate-100 py-3 pr-2">
+          ${selectedTable.items.map(item => `
+            <div class="py-3.5 flex items-center justify-between gap-4">
+              <div class="flex items-center space-x-3">
+                <img src="${item.img}" class="w-14 h-14 rounded-xl object-cover border border-slate-200">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="bg-brand-red/10 text-brand-red font-black text-xs px-2 py-0.5 rounded">SL: ${item.qty}</span>
+                    <h4 class="font-bold text-slate-900 text-sm">${item.name}</h4>
+                    ${item.isChilled ? '<span class="bg-brand-gold text-[10px] font-black px-1.5 py-0.2 rounded text-slate-900">CHILLED MEAT</span>' : ''}
+                  </div>
+                  ${item.note ? `
+                    <div class="text-xs text-amber-800 font-semibold bg-amber-50 border border-amber-200 px-2 py-0.5 rounded inline-block mt-1">
+                      <i class="fa-regular fa-comment-dots"></i> Bếp lưu ý: ${item.note}
+                    </div>
+                  ` : '<div class="text-xs text-slate-400 mt-1 italic">Không có ghi chú thêm</div>'}
+                </div>
+              </div>
+
+              <div>
+                ${item.status === 'SERVED' ? `
+                  <div class="text-right">
+                    <span class="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs px-3 py-2 rounded-xl">
+                      <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                      <span>ĐÃ NHẬN MÓN</span>
+                    </span>
+                    <div class="text-[10px] text-slate-400 mt-1">Đã kiểm đếm tại bàn</div>
+                  </div>
+                ` : `
+                  <button 
+                    onclick="requestConfirmDelivery('${selectedTable.id}', '${item.id}')"
+                    class="px-4 py-2 bg-brand-red hover:bg-brand-darkred text-white text-xs font-extrabold rounded-xl shadow-xs transition active:scale-95 flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i>
+                    <span>Xác nhận đã giao</span>
+                  </button>
+                `}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="pt-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+          <span>Nhân viên phụ trách: <strong>Nguyễn Minh Anh</strong></span>
+          <button onclick="markAllTableServed('${selectedTable.id}')" class="text-brand-red font-bold hover:underline ${selectedStats.isComplete ? 'hidden' : ''}">
+            ✓ Đánh dấu giao toàn bộ bàn này
+          </button>
+        </div>
+      `;
+    }
+
+    function selectSplitTable(id) {
+      selectedSplitTableId = id;
+      renderSplitView();
+    }
+
+    // ==============================================================
+    // RENDER: PRIORITY VIEW (Phương án 3 - Ưu tiên món chờ)
+    // ==============================================================
+    function renderPriorityView() {
+      const tbody = document.getElementById('priorityTableBody');
+      const emptyState = document.getElementById('emptySearchState');
+      const filtered = getFilteredTables();
+
+      // Flatten items that are pending across filtered tables
+      let pendingRows = [];
+      filtered.forEach(table => {
+        table.items.forEach(item => {
+          if (item.status === 'PENDING') {
+            pendingRows.push({ table, item });
+          }
+        });
+      });
+
+      // Sort by waiting time descending (most urgent first)
+      pendingRows.sort((a, b) => b.table.waitMinutes - a.table.waitMinutes);
+
+      if (pendingRows.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="py-12 text-center text-slate-400">
+              <i class="fa-solid fa-circle-check text-emerald-500 text-3xl mb-2"></i>
+              <p class="font-bold text-slate-700">Tuyệt vời! Không còn món nào đang chờ phục vụ.</p>
+              <p class="text-xs text-slate-400">Tất cả bàn đều đã được phục vụ đầy đủ.</p>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      tbody.innerHTML = pendingRows.map(({ table, item }) => {
+        const isUrgent = table.waitMinutes >= 15;
+
+        return `
+          <tr class="hover:bg-slate-50/80 transition-colors">
+            <td class="py-3.5 px-5 whitespace-nowrap">
+              <div class="flex items-center space-x-2">
+                <span class="w-8 h-8 rounded-lg bg-slate-900 text-white font-extrabold text-xs flex items-center justify-center">
+                  ${table.code.replace('BÀN ', '')}
+                </span>
+                <span class="font-extrabold text-slate-900">${table.code}</span>
+              </div>
+            </td>
+
+            <td class="py-3.5 px-5">
+              <div class="flex items-center space-x-3">
+                <img src="${item.img}" class="w-10 h-10 rounded-lg object-cover border border-slate-200">
+                <div>
+                  <div class="font-bold text-slate-900 text-xs sm:text-sm flex items-center gap-1.5">
+                    ${item.name}
+                    ${item.isChilled ? '<span class="bg-brand-gold text-[9px] font-black px-1 rounded text-slate-900">CHILLED</span>' : ''}
+                  </div>
+                  <span class="text-[11px] text-slate-400">Mã: #${item.id.toUpperCase()}</span>
+                </div>
+              </div>
+            </td>
+
+            <td class="py-3.5 px-4 font-black text-brand-red text-sm whitespace-nowrap">
+              x${item.qty}
+            </td>
+
+            <td class="py-3.5 px-5">
+              ${item.note ? `
+                <span class="text-xs font-semibold bg-amber-50 border border-amber-200 text-amber-800 px-2 py-0.5 rounded inline-flex items-center gap-1">
+                  <i class="fa-solid fa-triangle-exclamation text-[10px]"></i> ${item.note}
+                </span>
+              ` : '<span class="text-xs text-slate-400 italic">--</span>'}
+            </td>
+
+            <td class="py-3.5 px-4 whitespace-nowrap">
+              <span class="inline-flex items-center gap-1 text-xs font-bold ${isUrgent ? 'text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full animate-pulse' : 'text-slate-600'}">
+                <i class="fa-regular fa-clock"></i> ${table.waitMinutes} phút trước
+              </span>
+            </td>
+
+            <td class="py-3.5 px-5 whitespace-nowrap">
+              <span class="inline-flex items-center gap-1 text-xs font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2.5 py-1 rounded-full">
+                <i class="fa-solid fa-bell-concierge text-amber-600"></i> Đang chờ giao
+              </span>
+            </td>
+
+            <td class="py-3.5 px-5 text-right whitespace-nowrap">
+              <button 
+                onclick="requestConfirmDelivery('${table.id}', '${item.id}')"
+                class="px-3 py-1.5 bg-brand-red hover:bg-brand-darkred text-white text-xs font-extrabold rounded-lg shadow-xs transition active:scale-95 inline-flex items-center gap-1.5">
+                <i class="fa-solid fa-check"></i>
+                <span>Xác nhận đã giao</span>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ==============================================================
+    // ACTION: CONFIRM DELIVERY DIALOG & TOAST LOGIC
+    // ==============================================================
+    function requestConfirmDelivery(tableId, itemId) {
+      const table = tablesData.find(t => t.id === tableId);
+      if (!table) return;
+      const item = table.items.find(i => i.id === itemId);
+      if (!item) return;
+
+      pendingAction = { tableId, itemId, tableName: table.code, dishName: `${item.name} x${item.qty}`, note: item.note || 'Không có', wait: `${table.waitMinutes} phút` };
+
+      // Fill Modal Details
+      document.getElementById('modalDishTitle').textContent = `${item.name} (SL: ${item.qty})`;
+      document.getElementById('modalTableSubtitle').innerHTML = `Bàn giao tận tay khách tại <strong class="text-brand-red font-bold">${table.code}</strong>`;
+      document.getElementById('modalNote').textContent = item.note || 'Không có ghi chú';
+      document.getElementById('modalWaitTime').textContent = `${table.waitMinutes} phút`;
+
+      // Open Modal Animation
+      const modal = document.getElementById('confirmModal');
+      const box = document.getElementById('modalBox');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        box.classList.remove('scale-95', 'opacity-0');
+        box.classList.add('scale-100', 'opacity-100');
+      }, 10);
+    }
+
+    function closeConfirmModal() {
+      const modal = document.getElementById('confirmModal');
+      const box = document.getElementById('modalBox');
+      box.classList.remove('scale-100', 'opacity-100');
+      box.classList.add('scale-95', 'opacity-0');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        pendingAction = null;
+      }, 150);
+    }
+
+    function executeConfirmDelivery() {
+      if (!pendingAction) return;
+      const { tableId, itemId, tableName, dishName } = pendingAction;
+
+      // Mutate state
+      const targetTable = tablesData.find(t => t.id === tableId);
+      if (targetTable) {
+        const targetItem = targetTable.items.find(i => i.id === itemId);
+        if (targetItem) {
+          targetItem.status = 'SERVED';
+        }
+      }
+
+      closeConfirmModal();
+
+      // Re-render current UI
+      updateKPIs();
+      applyFiltersAndSearch();
+
+      // Show Success Toast
+      showToast(`Đã xác nhận giao thành công <strong>${dishName}</strong> đến <strong>${tableName}</strong>!`, 'success');
+    }
+
+    // Quick helper to serve all items for table in split view
+    function markAllTableServed(tableId) {
+      const table = tablesData.find(t => t.id === tableId);
+      if (!table) return;
+      table.items.forEach(i => i.status = 'SERVED');
+      updateKPIs();
+      applyFiltersAndSearch();
+      showToast(`Toàn bộ món tại <strong>${table.code}</strong> đã được phục vụ đầy đủ!`, 'success');
+    }
+
+    // Toast Notification System
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast-enter pointer-events-auto flex items-center space-x-3 px-4 py-3 rounded-2xl shadow-xl text-xs sm:text-sm font-medium border ${
+        type === 'success' 
+          ? 'bg-slate-900 text-white border-slate-700' 
+          : 'bg-white text-slate-800 border-slate-200'
+      }`;
+
+      toast.innerHTML = `
+        <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center flex-shrink-0">
+          <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        </div>
+        <div>${message}</div>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Refresh simulation
+    function refreshData() {
+      const icon = document.getElementById('refreshIcon');
+      icon.classList.add('fa-spin');
+      setTimeout(() => {
+        icon.classList.remove('fa-spin');
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        showToast('Dữ liệu bàn và món ăn đã được đồng bộ mới nhất!', 'info');
+      }, 600);
+    }
+
+    // Mobile Viewport Simulation Toggle
+    let isMobileSim = false;
+    function toggleMobileSim() {
+      isMobileSim = !isMobileSim;
+      const main = document.getElementById('mainContainer');
+      const btnText = document.getElementById('mobileSimText');
+
+      if (isMobileSim) {
+        main.style.maxWidth = '460px';
+        main.style.border = '8px solid #334155';
+        main.style.borderRadius = '36px';
+        main.style.margin = '20px auto';
+        main.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.25)';
+        btnText.textContent = 'Trở lại Desktop Web';
+        showToast('Chế độ mô phỏng màn hình Smartphone phục vụ', 'info');
+      } else {
+        main.style.maxWidth = '1720px';
+        main.style.border = 'none';
+        main.style.borderRadius = '0';
+        main.style.margin = '0 auto';
+        main.style.boxShadow = 'none';
+        btnText.textContent = 'Mô phỏng Mobile';
+      }
+    }
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+      updateKPIs();
+      renderGridView();
+    });
+  </script>
+<!-- END: JavaScriptApplicationLogic -->
+</body></html>
