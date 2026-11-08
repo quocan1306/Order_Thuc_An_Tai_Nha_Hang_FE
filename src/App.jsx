@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import StaffLayout from "./layouts/StaffLayout";
 import StaffService from "./pages/staff/StaffService";
 import MainLayout from "./layouts/MainLayout";
@@ -52,8 +53,9 @@ function App() {
               }
             />
 
-            <Route path="/staff" element={<StaffLayout />}>
-              <Route index element={<StaffService />} />
+            <Route element={<StaffLayout />}>
+              <Route path="/staff" element={<StaffService />} />
+              <Route path="/admin" element={<AdminDashboard />} />
             </Route>
 
             {/* Thanh toán */}
